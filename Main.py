@@ -58,7 +58,7 @@ if df_1 is not None:
     if 'AOD_412nm' not in df_1.columns or 'AOD_532nm' not in df_1.columns or 'AOD_667nm' not in df_1.columns:
         st.error(f"Missing expected columns in the dataset. Available columns: {df_1.columns}")
 if df_2 is not None:
-    if 'AOD_412nm' not in df_2.columns or 'AOD_532nm' not in df_2.columns or 'AOD_667nm' not in df_2.columns:
+    if 'AOD_400nm' not in df_2.columns or 'AOD_500nm' not in df_2.columns or 'AOD_675nm' not in df_2.columns:
         st.error(f"Missing expected columns in the dataset. Available columns: {df_2.columns}")    
 # Plot data from the first repository if columns are correct
     if 'AOD_412nm' in df_1.columns and 'AOD_532nm' in df_1.columns and 'AOD_667nm' in df_1.columns:
@@ -67,12 +67,12 @@ if df_2 is not None:
         plt.plot(df_1.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_412nm"].resample(SampleRate).mean(), '.k')
         plt.plot(df_1.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_532nm"].resample(SampleRate).mean(), '.k')
         plt.plot(df_1.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_667nm"].resample(SampleRate).mean(), '.k')
-if 'AOD_412nm' in df_2.columns and 'AOD_532nm' in df_2.columns and 'AOD_667nm' in df_2.columns:
+if 'AOD_400nm' in df_2.columns and 'AOD_500nm' in df_2.columns and 'AOD_675nm' in df_2.columns:
         
         # Plot AOD_440nm, AOD_500nm, and AOD_675nm as initial plot
-        plt.plot(df_2.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_412nm"].resample(SampleRate).mean(), '.k')
-        plt.plot(df_2.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_532nm"].resample(SampleRate).mean(), '.k')
-        plt.plot(df_2.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_667nm"].resample(SampleRate).mean(), '.k')
+        plt.plot(df_2.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_400nm"].resample(SampleRate).mean(), '.k')
+        plt.plot(df_2.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_500nm"].resample(SampleRate).mean(), '.k')
+        plt.plot(df_2.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_675nm"].resample(SampleRate).mean(), '.k')
 
         # Format the plot
         plt.gcf().autofmt_xdate()
