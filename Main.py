@@ -21,38 +21,58 @@ AOD_max = st.sidebar.slider("Y-Axis Max", min_value=0.0, max_value=1.0, value=0.
 
 # Input GitHub URL for the first repository
 file_url_1 = "https://raw.githubusercontent.com/Rsaltos7/SacromentoAOD/refs/heads/main/20240101_20241231_Sacramento_River.lev15"
-
+file_url_2 = "https://raw.githubusercontent.com/Rsaltos7/Central-valley-AOD/refs/heads/main/20240101_20241231_Modesto.lev15"
 # Function to load data from the given URL
-def load_data(file_url):
+def load_data(file_url_1):
     try:
         # Read the data from the provided GitHub raw URL
-        df = pd.read_csv(file_url, skiprows=6, parse_dates={'datetime': [0, 1]})
+        df_1 = pd.read_csv(file_url_1, skiprows=6, parse_dates={'datetime': [0, 1]})
         datetime_utc = pd.to_datetime(df["datetime"], format='%d:%m:%Y %H:%M:%S')
         datetime_pac = pd.to_datetime(datetime_utc).dt.tz_localize('UTC').dt.tz_convert('US/Pacific')
         df.set_index(datetime_pac, inplace=True)
         
         return df
     except Exception as e:
-        st.error(f"Failed to process the file from {file_url}: {e}")
+        st.error(f"Failed to process the file from {file_url_1}: {e}")
         return None
-
-# Load data from the first file
+def load_data(file_url_2):
+    try:
+        # Read the data from the provided GitHub raw URL
+        df_1 = pd.read_csv(file_url_2, skiprows=6, parse_dates={'datetime': [0, 1]})
+        datetime_utc = pd.to_datetime(df["datetime"], format='%d:%m:%Y %H:%M:%S')
+        datetime_pac = pd.to_datetime(datetime_utc).dt.tz_localize('UTC').dt.tz_convert('US/Pacific')
+        df.set_index(datetime_pac, inplace=True)
+        
+        return df
+    except Exception as e:
+        st.error(f"Failed to process the file from {file_url_2}: {e}")
+        return None# Load data from the first file
 df_1 = None
 if file_url_1:
     df_1 = load_data(file_url_1)
-
+df_2 = None
+if file_url_2:
+    df_2 = load_data(file_url_2)
 # Ensure data is loaded and columns are correct
 if df_1 is not None:
     if 'AOD_412nm' not in df_1.columns or 'AOD_532nm' not in df_1.columns or 'AOD_667nm' not in df_1.columns:
         st.error(f"Missing expected columns in the dataset. Available columns: {df_1.columns}")
-    
-    # Plot data from the first repository if columns are correct
+if df_2 is not None:
+    if 'AOD_412nm' not in df_2.columns or 'AOD_532nm' not in df_2.columns or 'AOD_667nm' not in df_2.columns:
+        st.error(f"Missing expected columns in the dataset. Available columns: {df_2.columns}")    
+# Plot data from the first repository if columns are correct
     if 'AOD_412nm' in df_1.columns and 'AOD_532nm' in df_1.columns and 'AOD_667nm' in df_1.columns:
         
         # Plot AOD_440nm, AOD_500nm, and AOD_675nm as initial plot
         plt.plot(df_1.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_412nm"].resample(SampleRate).mean(), '.k')
         plt.plot(df_1.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_532nm"].resample(SampleRate).mean(), '.k')
         plt.plot(df_1.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_667nm"].resample(SampleRate).mean(), '.k')
+if 'AOD_412nm' in df_2.columns and 'AOD_532nm' in df_2.columns and 'AOD_667nm' in df_2.columns:
+        
+        # Plot AOD_440nm, AOD_500nm, and AOD_675nm as initial plot
+        plt.plot(df_2.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_412nm"].resample(SampleRate).mean(), '.k')
+        plt.plot(df_2.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_532nm"].resample(SampleRate).mean(), '.k')
+        plt.plot(df_2.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_667nm"].resample(SampleRate).mean(), '.k')
 
         # Format the plot
         plt.gcf().autofmt_xdate()
