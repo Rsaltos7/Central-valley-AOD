@@ -20,7 +20,7 @@ AOD_min = st.sidebar.slider("Y-Axis Min", min_value=0.0, max_value=1.0, value=0.
 AOD_max = st.sidebar.slider("Y-Axis Max", min_value=0.0, max_value=1.0, value=0.3, step=0.01)
 
 # Input GitHub URL for the first repository
-file_url_1 = "https://raw.githubusercontent.com/Rsaltos7/SacromentoAOD/refs/heads/main/20240101_20241231_Sacramento_River.lev15"
+file_url_1 = "https://raw.githubusercontent.com/Rsaltos7/Central-valley-AOD/refs/heads/main/20240101_20241231_Sacramento_River.lev15"
 
 # Function to load data from the given URL
 def load_data(file_url):
