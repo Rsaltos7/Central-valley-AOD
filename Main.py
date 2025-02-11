@@ -14,7 +14,7 @@ StartDateTime = datetime.datetime.combine(StartDate, datetime.time(0, 0))
 EndDate = st.date_input("EndDate", datetime.date(2024, 1, 7))
 EndDateTime = datetime.datetime.combine(EndDate, datetime.time(23, 59))
 
-st.selectbox()
+
 
 # Allow the user to set y-axis limits
 st.sidebar.header("Adjust Y-axis Limits")
