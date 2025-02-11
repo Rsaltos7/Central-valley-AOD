@@ -14,8 +14,6 @@ StartDateTime = datetime.datetime.combine(StartDate, datetime.time(0, 0))
 EndDate = st.date_input("EndDate", datetime.date(2024, 1, 7))
 EndDateTime = datetime.datetime.combine(EndDate, datetime.time(23, 59))
 
-st.selectbox()
-
 # Allow the user to set y-axis limits
 st.sidebar.header("Adjust Y-axis Limits")
 AOD_min = st.sidebar.slider("Y-Axis Min", min_value=0.0, max_value=1.0, value=0.0, step=0.01)
@@ -23,58 +21,38 @@ AOD_max = st.sidebar.slider("Y-Axis Max", min_value=0.0, max_value=1.0, value=0.
 
 # Input GitHub URL for the first repository
 file_url_1 = "https://raw.githubusercontent.com/Rsaltos7/SacromentoAOD/refs/heads/main/20240101_20241231_Sacramento_River.lev15"
-file_url_2 = "https://raw.githubusercontent.com/Rsaltos7/Central-valley-AOD/refs/heads/main/20240101_20241231_Modesto.lev15"
+
 # Function to load data from the given URL
-def load_data(file_url_1):
+def load_data(file_url):
     try:
         # Read the data from the provided GitHub raw URL
-        df_1 = pd.read_csv(file_url_1, skiprows=6, parse_dates={'datetime': [0, 1]})
+        df = pd.read_csv(file_url, skiprows=6, parse_dates={'datetime': [0, 1]})
         datetime_utc = pd.to_datetime(df["datetime"], format='%d:%m:%Y %H:%M:%S')
         datetime_pac = pd.to_datetime(datetime_utc).dt.tz_localize('UTC').dt.tz_convert('US/Pacific')
         df.set_index(datetime_pac, inplace=True)
         
         return df
     except Exception as e:
-        st.error(f"Failed to process the file from {file_url_1}: {e}")
+        st.error(f"Failed to process the file from {file_url}: {e}")
         return None
-def load_data(file_url_2):
-    try:
-        # Read the data from the provided GitHub raw URL
-        df_1 = pd.read_csv(file_url_2, skiprows=6, parse_dates={'datetime': [0, 1]})
-        datetime_utc = pd.to_datetime(df["datetime"], format='%d:%m:%Y %H:%M:%S')
-        datetime_pac = pd.to_datetime(datetime_utc).dt.tz_localize('UTC').dt.tz_convert('US/Pacific')
-        df.set_index(datetime_pac, inplace=True)
-        
-        return df
-    except Exception as e:
-        st.error(f"Failed to process the file from {file_url_2}: {e}")
-        return None# Load data from the first file
+
+# Load data from the first file
 df_1 = None
 if file_url_1:
     df_1 = load_data(file_url_1)
-df_2 = None
-if file_url_2:
-    df_2 = load_data(file_url_2)
+
 # Ensure data is loaded and columns are correct
 if df_1 is not None:
     if 'AOD_412nm' not in df_1.columns or 'AOD_532nm' not in df_1.columns or 'AOD_667nm' not in df_1.columns:
         st.error(f"Missing expected columns in the dataset. Available columns: {df_1.columns}")
-if df_2 is not None:
-    if 'AOD_400nm' not in df_2.columns or 'AOD_500nm' not in df_2.columns or 'AOD_675nm' not in df_2.columns:
-        st.error(f"Missing expected columns in the dataset. Available columns: {df_2.columns}")    
-# Plot data from the first repository if columns are correct
+    
+    # Plot data from the first repository if columns are correct
     if 'AOD_412nm' in df_1.columns and 'AOD_532nm' in df_1.columns and 'AOD_667nm' in df_1.columns:
         
         # Plot AOD_440nm, AOD_500nm, and AOD_675nm as initial plot
         plt.plot(df_1.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_412nm"].resample(SampleRate).mean(), '.k')
         plt.plot(df_1.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_532nm"].resample(SampleRate).mean(), '.k')
         plt.plot(df_1.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_667nm"].resample(SampleRate).mean(), '.k')
-if 'AOD_400nm' in df_2.columns and 'AOD_500nm' in df_2.columns and 'AOD_675nm' in df_2.columns:
-        
-        # Plot AOD_440nm, AOD_500nm, and AOD_675nm as initial plot
-        plt.plot(df_2.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_400nm"].resample(SampleRate).mean(), '.k')
-        plt.plot(df_2.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_500nm"].resample(SampleRate).mean(), '.k')
-        plt.plot(df_2.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_675nm"].resample(SampleRate).mean(), '.k')
 
         # Format the plot
         plt.gcf().autofmt_xdate()
@@ -101,9 +79,9 @@ if 'AOD_400nm' in df_2.columns and 'AOD_500nm' in df_2.columns and 'AOD_675nm' i
         # Once the user submits, show the second graph (same as the first)
         if st.button("Submit"):
             # Plot the second graph (exact same as the first one)
-            plt.plot(df_1.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_440nm"].resample(SampleRate).mean(), '.b', label="412 nm")
-            plt.plot(df_1.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_500nm"].resample(SampleRate).mean(), '.g', label="532 nm")
-            plt.plot(df_1.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_675nm"].resample(SampleRate).mean(), '.r', label="667 nm")
+            plt.plot(df_1.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_412nm"].resample(SampleRate).mean(), '.b', label="412 nm")
+            plt.plot(df_1.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_532nm"].resample(SampleRate).mean(), '.g', label="532 nm")
+            plt.plot(df_1.loc[StartDateTime.strftime('%Y-%m-%d %H:%M:%S'):EndDateTime.strftime('%Y-%m-%d %H:%M:%S'), "AOD_667nm"].resample(SampleRate).mean(), '.r', label="667 nm")
 
             # Format the second plot
             plt.gcf().autofmt_xdate()
